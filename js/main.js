@@ -1,35 +1,38 @@
-// Student: Ryan Raishart
-// Course: CPT 206 
-// Due Date: 4/21/2018 
-// raishartr@my.westmoreland.edu
+// Ryan Raishart
+// kittyboy19
+// rjraishart@gmail.com
 
-$(document).ready(function(){
+$(document).ready(function () {
 
-    var getURL = function(word){  // appends URL with search term
-        var url = "https://pokeapi.co/api/v2/pokemon/" + word + '/';
-        return url;
-    };
+    const getURL = (word) => `https://pokeapi.co/api/v2/pokemon/${word}/`
 
-    var getJSON = function(url){
-        var xhReq = new XMLHttpRequest(); // new request
+    const getJSON = (url) => {
+        console.log(url);
+        const xhReq = new XMLHttpRequest(); // new request
         xhReq.open("GET", url, false);
         xhReq.send(null);
-        var jsonObject = JSON.parse(xhReq.responseText); // store response
+        const jsonObject = JSON.parse(xhReq.responseText); // store response
         return jsonObject;
-    };
-
-    var injectDOM = function(jsonData){ // displays pokemon name and 2 abilities
-        $("#results").html(jsonData['forms'][0]['name'].toUpperCase() +
-        '<br>' + jsonData['abilities'][0]['ability']['name'] +
-        " and " + jsonData['abilities'][1]['ability']['name']);
     }
 
-    $("#search").on("click", function(){
-        console.log("clicked");
-        var keyword = $("#searchBar").val().toLowerCase(); // get user search term
+    const getHTML = (jsonObject) => {
+
+        let html = `${jsonObject['forms'][0]['name'].toUpperCase()} <br>`;
+        for (const property in jsonObject['abilities']) {
+            html = html.concat(`${JSON.stringify(jsonObject['abilities'][property]['ability']['name'])} + `)
+            html = html.substring(0, html.length - 2);
+        }
+        return html;
+    }
+
+    const injectDOM = (html) => $("#results").html(html)
+
+    $("#search").on("click", function () {
+        const keyword = $("#searchBar").val().toLowerCase(); // get user search term
         console.log(keyword);
-        var url = getURL(keyword); // combine search term with base URL
+        const url = getURL(keyword); // combine search term with base URL
         var jsonData = getJSON(url); // convert response to JSON
-        injectDOM(jsonData); // display data
+        const html = getHTML(jsonData); // convert json to html
+        injectDOM(html); // display data
     });
 });
